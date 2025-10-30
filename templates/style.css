@@ -1,0 +1,16 @@
+selector .has-child .wp-block-navigation__submenu-container {
+    z-index:99;
+  }
+  selector > ul > li ul.wp-block-navigation-submenu{    border: 1px solid var(--wp--preset--color--color-6) !important;
+      padding: 0;
+      box-shadow: 0px 4px 30px 5px rgba(0, 0, 0, .05);
+      transition: .3s !important;
+      top: 120% !important;
+      min-width: 330px !important;}
+  selector > ul > li:hover > a{color: var(--wp--preset--color--color-1) !important;}
+  selector > ul > li.current-menu-item > a{color: var(--wp--preset--color--color-1) !important;}
+  selector > ul > li ul > li:hover > a{background-color: var(--wp--preset--color--color-1);
+    color: var(--wp--preset--color--white) !important;}
+  selector > ul > li ul > li.current-menu-item a{background-color: var(--wp--preset--color--color-1);
+    color: var(--wp--preset--color--white) !important;}
+  

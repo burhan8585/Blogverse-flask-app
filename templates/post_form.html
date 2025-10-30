@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - ModernBlog{% endblock %}
+
+{% block content %}
+<section class="post-form-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fw-bold mb-4">{{ title }}</h2>
+                        
+                        <form method="POST" novalidate>
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-4">
+                                {{ form.title.label(class="form-label fw-bold") }}
+                                {{ form.title(class="form-control form-control-lg" + (" is-invalid" if form.title.errors else "")) }}
+                                {% if form.title.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.title.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form.excerpt.label(class="form-label fw-bold") }}
+                                {{ form.excerpt(class="form-control" + (" is-invalid" if form.excerpt.errors else ""), placeholder="A short description of your post") }}
+                                {% if form.excerpt.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.excerpt.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">Optional: A brief summary that will appear on the homepage</small>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form.content.label(class="form-label fw-bold") }}
+                                {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else ""), rows="12", placeholder="Write your blog post content here...") }}
+                                {% if form.content.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.content.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    {{ form.author.label(class="form-label fw-bold") }}
+                                    {{ form.author(class="form-control" + (" is-invalid" if form.author.errors else "")) }}
+                                    {% if form.author.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.author.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    {{ form.category_id.label(class="form-label fw-bold") }}
+                                    {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
+                                    {% if form.category_id.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.category_id.errors %}{{ error }}{% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form.image_url.label(class="form-label fw-bold") }}
+                                {{ form.image_url(class="form-control" + (" is-invalid" if form.image_url.errors else ""), placeholder="https://example.com/image.jpg") }}
+                                {% if form.image_url.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.image_url.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small class="form-text text-muted">Optional: URL to a cover image for your post</small>
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form.tags.label(class="form-label fw-bold") }}
+                                {{ form.tags(class="form-control", placeholder="technology, design, coding") }}
+                                <small class="form-text text-muted">Separate tags with commas</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.featured(class="form-check-input") }}
+                                    {{ form.featured.label(class="form-check-label") }}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.published(class="form-check-input", checked=True) }}
+                                    {{ form.published.label(class="form-check-label") }}
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                {{ form.submit(class="btn btn-primary btn-lg px-5") }}
+                                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg px-4">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

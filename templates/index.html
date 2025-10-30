@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Home - ModernBlog{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-3 fw-bold mb-3">Welcome to BlogVerse</h1>
+                <p class="lead text-muted mb-4">Discover stories, thinking, and expertise from writers on any topic.</p>
+                <form action="{{ url_for('index') }}" method="get" class="search-form mx-auto">
+                    <div class="input-group input-group-lg shadow-sm">
+                        <input type="text" name="q" class="form-control" placeholder="Search articles..." value="{{ search_query or '' }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if featured_posts and not search_query and not current_category and not current_tag %}
+<section class="featured-section py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title mb-4">Featured Posts</h2>
+        <div class="row g-4">
+            {% for post in featured_posts %}
+            <div class="col-md-4">
+                <div class="card post-card h-100 border-0 shadow-sm">
+                    {% if post.image_url %}
+                    <div class="card-img-wrapper">
+                        <img src="{{ post.image_url }}" class="card-img-top" alt="{{ post.title }}">
+                        <span class="featured-badge"><i class="fas fa-star me-1"></i>Featured</span>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="post-meta mb-2">
+                            <span class="badge bg-primary-subtle text-primary">{{ post.category.name }}</span>
+                            <span class="text-muted ms-2">
+                                <i class="far fa-clock me-1"></i>{{ post.created_at.strftime('%b %d, %Y') }}
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">{{ post.title }}</h5>
+                        <p class="card-text text-muted">{{ post.excerpt or post.content[:150] + '...' }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">
+                                <i class="far fa-user me-1"></i>{{ post.author }}
+                            </span>
+                            <a href="{{ url_for('post_detail', slug=post.slug) }}" class="btn btn-sm btn-outline-primary">
+                                Read More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="posts-section py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title mb-0">
+                {% if current_category %}
+                    Category: {{ current_category|title }}
+                {% elif current_tag %}
+                    Tag: {{ current_tag|title }}
+                {% elif search_query %}
+                    Search Results for "{{ search_query }}"
+                {% else %}
+                    Latest Posts
+                {% endif %}
+            </h2>
+            {% if current_category or current_tag or search_query %}
+            <a href="{{ url_for('index') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-times me-1"></i>Clear Filter
+            </a>
+            {% endif %}
+        </div>
+
+        {% if posts.items %}
+        <div class="row g-4">
+            {% for post in posts.items %}
+            <div class="col-md-6 col-lg-4">
+                <article class="card post-card h-100 border-0 shadow-sm">
+                    {% if post.image_url %}
+                    <div class="card-img-wrapper">
+                        <img src="{{ post.image_url }}" class="card-img-top" alt="{{ post.title }}">
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="post-meta mb-2">
+                            <a href="{{ url_for('index', category=post.category.slug) }}" class="badge bg-primary-subtle text-primary text-decoration-none">
+                                {{ post.category.name }}
+                            </a>
+                            <span class="text-muted ms-2">
+                                <i class="far fa-clock me-1"></i>{{ post.created_at.strftime('%b %d, %Y') }}
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">
+                            <a href="{{ url_for('post_detail', slug=post.slug) }}" class="text-decoration-none text-dark">
+                                {{ post.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">{{ post.excerpt or post.content[:120] + '...' }}</p>
+                        <div class="post-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">
+                                    <i class="far fa-user me-1"></i>{{ post.author }}
+                                </span>
+                                {% if post.tags %}
+                                <div class="post-tags">
+                                    {% for tag in post.tags[:2] %}
+                                    <a href="{{ url_for('index', tag=tag.slug) }}" class="badge bg-light text-dark text-decoration-none">
+                                        #{{ tag.name }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if posts.pages > 1 %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if posts.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=posts.prev_num, category=current_category, tag=current_tag, q=search_query) }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == posts.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('index', page=page_num, category=current_category, tag=current_tag, q=search_query) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('index', page=posts.next_num, category=current_category, tag=current_tag, q=search_query) }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No posts found</h4>
+            <p class="text-muted">Try adjusting your search or filter to find what you're looking for.</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">View All Posts</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
